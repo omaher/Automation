@@ -1,0 +1,41 @@
+name: Naukri Automation
+
+on:
+  workflow_dispatch: # Trigger manually or schedule it
+  schedule:
+    - cron: '0 1,8-10,18,21,23 * * *' # Schedule hours 1, 8, 9, 10, 18, 21, and 23
+
+jobs:
+  automate-naukri:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9' # Python version to use
+
+    - name: Install Dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install selenium
+
+    - name: Set up Selenium WebDriver
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y wget unzip
+        wget -q "https://chromedriver.storage.googleapis.com/$(curl -sS chromedriver.storage.googleapis.com/LATEST_RELEASE)/chromedriver_linux64.zip" -O chromedriver.zip
+        unzip chromedriver.zip
+        sudo mv chromedriver /usr/local/bin/
+        sudo chmod +x /usr/local/bin/chromedriver
+
+    - name: Run Naukri Automation
+      env:
+        NAUKRI_USERNAME: ${{ secrets.NAUKRI_USERNAME }}
+        NAUKRI_PASSWORD: ${{ secrets.NAUKRI_PASSWORD }}
+        RESUME_PATH: ./resources/Omkar_Aher_resume_5years.pdf # Relative path in the repository
+      run: |
+        python automate_naukri.py
