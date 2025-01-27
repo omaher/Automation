@@ -42,27 +42,27 @@ jobs:
         echo "Installed ChromeDriver version: ${CHROMEDRIVER_VERSION}"
         echo "CHROMEDRIVER_VERSION=${CHROMEDRIVER_VERSION}" >> $GITHUB_ENV
 
-    - name: Install ChromeDriver if Necessary
+    - name: Remove Old ChromeDriver if Present
       run: |
-        # Only install ChromeDriver if the version doesn't match
-        if [ "$CHROMEDRIVER_VERSION" != "ChromeDriver ${CHROME_VERSION}" ]; then
-          echo "ChromeDriver version does not match. Installing the correct version..."
-          
-          # Fetch the latest ChromeDriver version for the closest Chrome version
-          CHROMEDRIVER_VERSION=$(curl -sS "https://chromedriver.storage.googleapis.com/LATEST_RELEASE" || echo "latest")
-          echo "Chromedriver version to be installed: ${CHROMEDRIVER_VERSION}"
-          
-          if [ "$CHROMEDRIVER_VERSION" != "latest" ]; then
-            # Download matching ChromeDriver
-            wget -q "https://chromedriver.storage.googleapis.com/${CHROMEDRIVER_VERSION}/chromedriver_linux64.zip" -O chromedriver.zip
-            unzip chromedriver.zip
-            sudo mv chromedriver /usr/local/bin/
-            sudo chmod +x /usr/local/bin/chromedriver
-          else
-            echo "Could not fetch a matching ChromeDriver version. Proceeding with available version."
-          fi
+        # Check if chromedriver exists and delete it if necessary
+        if [ -f "/usr/local/bin/chromedriver" ]; then
+          echo "Removing old chromedriver..."
+          sudo rm /usr/local/bin/chromedriver
+        fi
+
+    - name: Install Correct ChromeDriver Version
+      run: |
+        # Fetch the correct ChromeDriver version for Chrome 132.x.x.x
+        CHROMEDRIVER_VERSION=$(curl -sS "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_132.0.6834" || echo "not_found")
+        if [ "$CHROMEDRIVER_VERSION" != "not_found" ]; then
+          echo "Installing ChromeDriver version: ${CHROMEDRIVER_VERSION}"
+          wget -q "https://chromedriver.storage.googleapis.com/${CHROMEDRIVER_VERSION}/chromedriver_linux64.zip" -O chromedriver.zip
+          unzip chromedriver.zip
+          sudo mv chromedriver /usr/local/bin/
+          sudo chmod +x /usr/local/bin/chromedriver
         else
-          echo "ChromeDriver version is already correct."
+          echo "No compatible ChromeDriver version found."
+          exit 1
         fi
 
     - name: Verify Chrome and ChromeDriver Versions
