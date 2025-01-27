@@ -50,20 +50,15 @@ jobs:
           sudo rm /usr/local/bin/chromedriver
         fi
 
-    - name: Install Correct ChromeDriver Version
+    - name: Install ChromeDriver Version 114.0.5735.90
       run: |
-        # Fetch the correct ChromeDriver version for Chrome 132.x.x.x
-        CHROMEDRIVER_VERSION=$(curl -sS "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_132.0.6834" || echo "not_found")
-        if [ "$CHROMEDRIVER_VERSION" != "not_found" ]; then
-          echo "Installing ChromeDriver version: ${CHROMEDRIVER_VERSION}"
-          wget -q "https://chromedriver.storage.googleapis.com/${CHROMEDRIVER_VERSION}/chromedriver_linux64.zip" -O chromedriver.zip
-          unzip chromedriver.zip
-          sudo mv chromedriver /usr/local/bin/
-          sudo chmod +x /usr/local/bin/chromedriver
-        else
-          echo "No compatible ChromeDriver version found."
-          exit 1
-        fi
+        # Fetch and install ChromeDriver version 114.0.5735.90
+        CHROMEDRIVER_VERSION="114.0.5735.90"
+        echo "Installing ChromeDriver version: ${CHROMEDRIVER_VERSION}"
+        wget -q "https://chromedriver.storage.googleapis.com/${CHROMEDRIVER_VERSION}/chromedriver_linux64.zip" -O chromedriver.zip
+        unzip chromedriver.zip
+        sudo mv chromedriver /usr/local/bin/
+        sudo chmod +x /usr/local/bin/chromedriver
 
     - name: Verify Chrome and ChromeDriver Versions
       run: |
