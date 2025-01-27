@@ -3,7 +3,7 @@ name: Naukri Automation
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 1,8-10,18,21,23 * * *' # Schedule hours 1, 8, 9, 10, 18, 21, and 23
+    - cron: '0 9 * * *' # Schedule at 9:00 AM daily
 
 jobs:
   automate-naukri:
@@ -47,14 +47,20 @@ jobs:
         # Only install ChromeDriver if the version doesn't match
         if [ "$CHROMEDRIVER_VERSION" != "ChromeDriver ${CHROME_VERSION}" ]; then
           echo "ChromeDriver version does not match. Installing the correct version..."
-          CHROMEDRIVER_VERSION=$(curl -sS chromedriver.storage.googleapis.com/LATEST_RELEASE_${CHROME_VERSION})
+          
+          # Fetch the latest ChromeDriver version for the closest Chrome version
+          CHROMEDRIVER_VERSION=$(curl -sS "https://chromedriver.storage.googleapis.com/LATEST_RELEASE" || echo "latest")
           echo "Chromedriver version to be installed: ${CHROMEDRIVER_VERSION}"
-
-          # Install matching ChromeDriver
-          wget -q "https://chromedriver.storage.googleapis.com/${CHROMEDRIVER_VERSION}/chromedriver_linux64.zip" -O chromedriver.zip
-          unzip chromedriver.zip
-          sudo mv chromedriver /usr/local/bin/
-          sudo chmod +x /usr/local/bin/chromedriver
+          
+          if [ "$CHROMEDRIVER_VERSION" != "latest" ]; then
+            # Download matching ChromeDriver
+            wget -q "https://chromedriver.storage.googleapis.com/${CHROMEDRIVER_VERSION}/chromedriver_linux64.zip" -O chromedriver.zip
+            unzip chromedriver.zip
+            sudo mv chromedriver /usr/local/bin/
+            sudo chmod +x /usr/local/bin/chromedriver
+          else
+            echo "Could not fetch a matching ChromeDriver version. Proceeding with available version."
+          fi
         else
           echo "ChromeDriver version is already correct."
         fi
