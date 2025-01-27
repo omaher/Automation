@@ -23,20 +23,46 @@ jobs:
         python -m pip install --upgrade pip
         pip install selenium
 
-    - name: Install Chrome and Compatible ChromeDriver
+    - name: Install Chrome
       run: |
-        # Install Chrome
         sudo apt-get update
         sudo apt-get install -y google-chrome-stable
 
+    - name: Verify Chrome Version
+      run: |
         # Get Chrome version
         CHROME_VERSION=$(google-chrome --version | grep -oP '\d+\.\d+\.\d+')
+        echo "Installed Chrome version: ${CHROME_VERSION}"
+        echo "CHROME_VERSION=${CHROME_VERSION}" >> $GITHUB_ENV
 
-        # Download matching ChromeDriver
-        wget -q "https://chromedriver.storage.googleapis.com/${CHROME_VERSION}/chromedriver_linux64.zip" -O chromedriver.zip
-        unzip chromedriver.zip
-        sudo mv chromedriver /usr/local/bin/
-        sudo chmod +x /usr/local/bin/chromedriver
+    - name: Check ChromeDriver Version
+      run: |
+        # Get ChromeDriver version (if it exists)
+        CHROMEDRIVER_VERSION=$(chromedriver --version || echo "not_installed")
+        echo "Installed ChromeDriver version: ${CHROMEDRIVER_VERSION}"
+        echo "CHROMEDRIVER_VERSION=${CHROMEDRIVER_VERSION}" >> $GITHUB_ENV
+
+    - name: Install ChromeDriver if Necessary
+      run: |
+        # Only install ChromeDriver if the version doesn't match
+        if [ "$CHROMEDRIVER_VERSION" != "ChromeDriver ${CHROME_VERSION}" ]; then
+          echo "ChromeDriver version does not match. Installing the correct version..."
+          CHROMEDRIVER_VERSION=$(curl -sS chromedriver.storage.googleapis.com/LATEST_RELEASE_${CHROME_VERSION})
+          echo "Chromedriver version to be installed: ${CHROMEDRIVER_VERSION}"
+
+          # Install matching ChromeDriver
+          wget -q "https://chromedriver.storage.googleapis.com/${CHROMEDRIVER_VERSION}/chromedriver_linux64.zip" -O chromedriver.zip
+          unzip chromedriver.zip
+          sudo mv chromedriver /usr/local/bin/
+          sudo chmod +x /usr/local/bin/chromedriver
+        else
+          echo "ChromeDriver version is already correct."
+        fi
+
+    - name: Verify Chrome and ChromeDriver Versions
+      run: |
+        google-chrome --version
+        chromedriver --version
 
     - name: Run Naukri Automation
       env:
