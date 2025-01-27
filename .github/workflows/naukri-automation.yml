@@ -23,10 +23,19 @@ jobs:
         python -m pip install --upgrade pip
         pip install selenium
 
-    - name: Install Chrome
+    - name: Uninstall Current Chrome Version
       run: |
+        echo "Uninstalling current Google Chrome version"
+        sudo apt-get purge -y google-chrome-stable
+
+    - name: Install Google Chrome Version 114
+      run: |
+        # Install Google Chrome version 114.x.x.x (Stable version)
         sudo apt-get update
-        sudo apt-get install -y google-chrome-stable
+        sudo apt-get install -y wget
+        wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+        sudo dpkg -i google-chrome-stable_current_amd64.deb
+        sudo apt-get -f install
 
     - name: Verify Chrome Version
       run: |
@@ -34,13 +43,6 @@ jobs:
         CHROME_VERSION=$(google-chrome --version | grep -oP '\d+\.\d+\.\d+')
         echo "Installed Chrome version: ${CHROME_VERSION}"
         echo "CHROME_VERSION=${CHROME_VERSION}" >> $GITHUB_ENV
-
-    - name: Check ChromeDriver Version
-      run: |
-        # Get ChromeDriver version (if it exists)
-        CHROMEDRIVER_VERSION=$(chromedriver --version || echo "not_installed")
-        echo "Installed ChromeDriver version: ${CHROMEDRIVER_VERSION}"
-        echo "CHROMEDRIVER_VERSION=${CHROMEDRIVER_VERSION}" >> $GITHUB_ENV
 
     - name: Remove Old ChromeDriver if Present
       run: |
