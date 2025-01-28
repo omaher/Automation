@@ -19,7 +19,6 @@ try:
     driver.get("https://www.naukri.com/nlogin/login")
 
     # Log in
-    driver.find_element(By.LINK_TEXT, "Login").click()
     time.sleep(2)
 
     username_input = driver.find_element(By.ID, "usernameField")
