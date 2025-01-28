@@ -1,7 +1,7 @@
 name: Naukri Automation
 
 on:
-  workflow_dispatch:
+  workflow_dispatch: # Trigger manually or schedule it
   schedule:
     - cron: '0 9 * * *' # Schedule at 9:00 AM daily
 
@@ -16,56 +16,21 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
-        python-version: '3.9'
+        python-version: '3.9' # Python version to use
 
     - name: Install Dependencies
       run: |
         python -m pip install --upgrade pip
         pip install selenium
 
-    - name: Uninstall Current Chrome Version
+    - name: Set up Selenium WebDriver
       run: |
-        echo "Uninstalling current Google Chrome version"
-        sudo apt-get purge -y google-chrome-stable
-
-    - name: Install Google Chrome Version 114
-      run: |
-        # Install Google Chrome version 114.x.x.x (Stable version)
         sudo apt-get update
-        sudo apt-get install -y wget
-        wget https://mirror.cs.uchicago.edu/google-chrome/pool/main/g/google-chrome-stable/google-chrome-stable_114.0.5735.90-1_amd64.deb
-        sudo dpkg -i google-chrome-stable_114.0.5735.90-1_amd64.deb
-        sudo apt-get -f install
-
-    - name: Verify Chrome Version
-      run: |
-        # Get Chrome version
-        CHROME_VERSION=$(google-chrome --version | grep -oP '\d+\.\d+\.\d+')
-        echo "Installed Chrome version: ${CHROME_VERSION}"
-        echo "CHROME_VERSION=${CHROME_VERSION}" >> $GITHUB_ENV
-
-    - name: Remove Old ChromeDriver if Present
-      run: |
-        # Check if chromedriver exists and delete it if necessary
-        if [ -f "/usr/local/bin/chromedriver" ]; then
-          echo "Removing old chromedriver..."
-          sudo rm /usr/local/bin/chromedriver
-        fi
-
-    - name: Install ChromeDriver Version 114.0.5735.90
-      run: |
-        # Fetch and install ChromeDriver version 114.0.5735.90
-        CHROMEDRIVER_VERSION="114.0.5735.90"
-        echo "Installing ChromeDriver version: ${CHROMEDRIVER_VERSION}"
-        wget -q "https://chromedriver.storage.googleapis.com/${CHROMEDRIVER_VERSION}/chromedriver_linux64.zip" -O chromedriver.zip
+        sudo apt-get install -y wget unzip
+        wget -q "https://storage.googleapis.com/chrome-for-testing-public/132.0.6834.110/linux64/chromedriver-linux64.zip" -O chromedriver.zip
         unzip chromedriver.zip
         sudo mv chromedriver /usr/local/bin/
         sudo chmod +x /usr/local/bin/chromedriver
-
-    - name: Verify Chrome and ChromeDriver Versions
-      run: |
-        google-chrome --version
-        chromedriver --version
 
     - name: Run Naukri Automation
       env:
