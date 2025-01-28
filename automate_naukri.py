@@ -5,8 +5,14 @@ from selenium.webdriver.common.action_chains import ActionChains
 import time
 import os
 
-# Initialize the WebDriver (e.g., Chrome)
-driver = webdriver.Chrome()
+# Configure Chrome options for headless mode
+options = Options()
+options.add_argument("--headless")
+options.add_argument("--no-sandbox")
+options.add_argument("--disable-dev-shm-usage")
+
+# Start WebDriver
+driver = webdriver.Chrome(options=options)
 
 try:
     # Open Naukri.com
