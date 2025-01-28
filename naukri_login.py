@@ -3,7 +3,6 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.action_chains import ActionChains
 import time
-import os
 
 # Initialize the WebDriver (e.g., Chrome)
 driver = webdriver.Chrome()
@@ -22,8 +21,8 @@ try:
     username = driver.find_element(By.ID, "usernameField")
     password = driver.find_element(By.ID, "passwordField")
 
-    username.send_keys(os.getenv("NAUKRI_USERNAME"))
-    password.send_keys(os.getenv("NAUKRI_PASSWORD"))
+    username.send_keys("omkarbaher@gmail.com")
+    password.send_keys("hCKNK@98")
 
     # Click the login button
     driver.find_element(By.XPATH, "//button[text()='Login']").click()
@@ -46,7 +45,7 @@ try:
     time.sleep(2)
 
     # Type the path of the CV file
-    pyautogui.write(os.getenv("RESUME_PATH"))  # Replace with the actual path to your CV
+    pyautogui.write(r"C:\GITHUB\Automation\resources\Omkar_Aher_resume_5years.pdf")  # Replace with the actual path to your CV
     time.sleep(1)
 
     # Press Enter to confirm the file selection
