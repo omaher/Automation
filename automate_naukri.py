@@ -16,7 +16,7 @@ driver = webdriver.Chrome(options=options)
 
 try:
     # Open Naukri website
-    driver.get("https://www.naukri.com/")
+    driver.get("https://www.naukri.com/nlogin/login")
 
     # Log in
     driver.find_element(By.LINK_TEXT, "Login").click()
