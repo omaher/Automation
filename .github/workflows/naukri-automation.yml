@@ -31,11 +31,14 @@ jobs:
         mv chromedriver-linux64 chromedriver
         sudo mv chromedriver /usr/local/bin/
         sudo chmod +x /usr/local/bin/chromedriver
+        chrome --version
+        chromedriver --version
         wget -q "https://storage.googleapis.com/chrome-for-testing-public/132.0.6834.159/linux64/chrome-headless-shell-linux64.zip" -O chrome-headless-shell.zip
         unzip chrome-headless-shell.zip
         mv chrome-headless-shell-linux64 chrome-headless-shell
         sudo mv chrome-headless-shell /usr/local/bin/
         sudo chmod +x /usr/local/bin/chrome-headless-shell
+        chrome-headless-shell --version
 
     - name: Run Naukri Automation
       env:
