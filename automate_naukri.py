@@ -8,14 +8,8 @@ from selenium.webdriver.support import expected_conditions as EC
 import time
 import os
 
-# Configure Chrome options for headless mode
-options = Options()
-options.add_argument("--headless")
-options.add_argument("--no-sandbox")
-options.add_argument("--disable-dev-shm-usage")
-
 # Start WebDriver
-driver = webdriver.Chrome(options=options)
+driver = webdriver.Chrome()
 
 try:
     # Open Naukri.com
